@@ -67,7 +67,7 @@ class Home extends Component {
             <NumberFormat thousandSeparator={true} displayType={'text'} value={somministrazioni} renderText={formattedValue => <Text numberOfLines={1} style={{fontWeight:"200", color: 'white', fontSize: 40, margin: 0}}>{formattedValue}</Text>}/>
           </View>
         </View>
-        <View style={{...styles.box,...{backgroundColor: "#fff59d"}}}>
+        <View style={{...styles.box,...{backgroundColor: "#ffffff"}}}>
           <Text style={{fontWeight:"200", color: '#171f24', fontSize: 21}}>
             solo prima dose
           </Text>
