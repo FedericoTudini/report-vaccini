@@ -7,27 +7,17 @@ export default class Gender extends Component {
     constructor(props)
     {
         super(props);
-        let male, female;
-        male = female = 0;
-        for (let index = 0; index < this.props.data.length; index++) {
-            female += (this.props.data[index].sesso_femminile);
-            male += (this.props.data[index].sesso_maschile);
-        }
-        this.state = {
-            male : male,
-            female : female
-        }
     }
     render() {
         return(
             <View style={styles.container}>
                 <View style={styles.card}>
                     <Image source={require("./images/M.png")} style={{width: 100, height: 100}} resizeMode="contain"/>
-                    <NumberFormat thousandSeparator={true} displayType={'text'} value={this.state.male}  renderText={formattedValue => <Text numberOfLines={1} style={styles.num}>{formattedValue}</Text>}/>
+                    <NumberFormat thousandSeparator={true} displayType={'text'} value={this.props.male}  renderText={formattedValue => <Text numberOfLines={1} style={styles.num}>{formattedValue}</Text>}/>
                 </View>
                 <View style={styles.card}>
                     <Image source={require("./images/F.png")} style={{width: 100, height: 100}} resizeMode="contain"/>
-                    <NumberFormat thousandSeparator={true} displayType={'text'} value={this.state.female} renderText={formattedValue => <Text numberOfLines={1} style={styles.num}>{formattedValue}</Text>}/>
+                    <NumberFormat thousandSeparator={true} displayType={'text'} value={this.props.female} renderText={formattedValue => <Text numberOfLines={1} style={styles.num}>{formattedValue}</Text>}/>
                 </View>
             </View>
         );

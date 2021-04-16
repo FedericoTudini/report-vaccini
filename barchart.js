@@ -10,21 +10,6 @@ export default class Bar extends Component {
     constructor(props)
     {
         super(props);
-        const data = {
-            labels: [],
-            datasets: [
-              {
-                data: []
-              }
-            ]
-          };
-        for (let index = this.props.data.length - 1; index >= 0; index--) {
-            data.labels.push(this.props.data[index].fascia_anagrafica);
-            data.datasets[0].data.push(this.props.data[index].totale);
-        }
-        this.state = {
-            data : data
-        }
     }
     render() {
         const chartConfig = {
@@ -46,7 +31,7 @@ export default class Bar extends Component {
                     <View style={{flexDirection: 'row', justifyContent: 'flex-start'}}>
                     <BarChart
                         style={chartConfig}
-                        data={this.state.data}
+                        data={this.props.data}
                         width={600}
                         height={250}
                         chartConfig={chartConfig}

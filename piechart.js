@@ -4,82 +4,17 @@ import { ActivityIndicator, Dimensions, StyleSheet, Text, View } from 'react-nat
 import {
     PieChart
   } from "react-native-chart-kit";
+import { useNavigation, useRoute } from '@react-navigation/native';
 
 
-export default class Pie extends Component {
+class Pie extends Component {
     constructor(props)
     {
         super(props);
-        let ospitiRsa, sanitari, nonSanitari, over, scolastico, forzeArmate, altro;
-        ospitiRsa = sanitari = nonSanitari = over = scolastico = forzeArmate = altro = 0;
-        for (let index = 0; index < this.props.data.length; index++) {
-            ospitiRsa += (this.props.data[index].categoria_ospiti_rsa);
-            sanitari += (this.props.data[index].categoria_operatori_sanitari_sociosanitari);
-            nonSanitari += (this.props.data[index].categoria_personale_non_sanitario);
-            forzeArmate += (this.props.data[index].categoria_forze_armate);
-            altro += (this.props.data[index].categoria_altro);
-            over += (this.props.data[index].categoria_over80);
-            scolastico += (this.props.data[index].categoria_personale_scolastico);
-        }
-        const dataB = [
-                {
-                  name: "ospiti rsa",
-                  population: ospitiRsa,
-                  color: "#ffb037",
-                  legendFontColor: "#7F7F7F",
-                  legendFontSize: 15
-                },
-                {
-                    name: "sanitario",
-                    population: sanitari,
-                    color: "#f8f5f1",
-                    legendFontColor: "#7F7F7F",
-                    legendFontSize: 15
-                },
-                {
-                    name: "non sanitario",
-                    population: nonSanitari,
-                    color: "#e9896a",
-                    legendFontColor: "#7F7F7F",
-                    legendFontSize: 15
-                },
-                {
-                    name: "forze armate",
-                    population: forzeArmate,
-                    color: "#387c6d",
-                    legendFontColor: "#7F7F7F",
-                    legendFontSize: 15
-                },
-                {
-                    name: "scolastico",
-                    population: scolastico,
-                    color: "#C73E1D",
-                    legendFontColor: "#7F7F7F",
-                    legendFontSize: 15
-                },
-                {
-                    name: "over 80",
-                    population: over,
-                    color: "#B2DBBF",
-                    legendFontColor: "#7F7F7F",
-                    legendFontSize: 15
-                },
-                {
-                    name: "altro",
-                    population: altro,
-                    color: "#98ddca",
-                    legendFontColor: "#7F7F7F",
-                    legendFontSize: 15
-                },
-        ];
-        this.state = {
-            data : dataB,
-            totale : this.props.totale
-        }
         this.names = this.names.bind(this);
     }
     names() {
-        return this.state.data.map((category) =>  {
+        return this.props.data.map((category) =>  {
             return(
                 <View key={category.color} style={{width: "100%", justifyContent:"flex-start", flexDirection: 'row', alignItems: "center"}}>
                     <View style={{
@@ -90,7 +25,7 @@ export default class Pie extends Component {
                         borderRadius: 20,
                         backgroundColor: category.color
                     }}></View>
-                    <View style={{paddingLeft: 10}}><Text style={{color: 'white'}}numberOfLines={1}>{Math.round(category.population * 100 / this.state.totale)+ "% " + category.name}</Text></View>
+                    <View style={{paddingLeft: 10}}><Text style={{color: 'white'}} numberOfLines={1}>{Math.round(category.population * 100 / this.props.totale)+ "% " + category.name}</Text></View>
                 </View>
             )   
         })
@@ -109,7 +44,7 @@ export default class Pie extends Component {
                 </View>
                 <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
                     <PieChart
-                        data={this.state.data}
+                        data={this.props.data}
                         width={150}
                         height={150}
                         chartConfig={chartConfig}
@@ -127,6 +62,12 @@ export default class Pie extends Component {
             </View>
         );
     }
+}
+
+export default function(props) {
+    const navigation = useNavigation();
+    const route = useRoute();
+    return <Pie {...props} navigation={navigation} route={route}/>;
 }
 
 const styles = StyleSheet.create({

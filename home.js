@@ -8,61 +8,38 @@ import Bezier from "./bezier.js";
 import NumberFormat from 'react-number-format';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faBars, faTimes } from '@fortawesome/free-solid-svg-icons';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 
+/*
+  <Bar data = {this.state.data} />
+  <Gender data={this.state.data} />
+  <Bezier data={this.state.bigdata} time={this.state.rawTime} />
+*/
 
 class Home extends Component {
   constructor(props)
   {
     super(props);
-    this.state = {
-      data : [],
-      vaccinati: 0,
-      isLoaded: false, 
-      time: null,
-      somministrazioni: 0,
-      rawTime: null,
-      bigdata: null
-    }
-  }
-
-  async componentDidMount() {
-    this.fetchData();
-  }
-
-
-  fetchData = async () => {
-    const response = await fetch("https://raw.githubusercontent.com/italia/covid19-opendata-vaccini/master/dati/anagrafica-vaccini-summary-latest.json");
-    const res = await fetch("https://raw.githubusercontent.com/italia/covid19-opendata-vaccini/master/dati/somministrazioni-vaccini-summary-latest.json");
-    const regRes = await fetch("https://raw.githubusercontent.com/italia/covid19-opendata-vaccini/master/dati/vaccini-summary-latest.json");
-    const data = await response.json();
-    const bigdata = await res.json();
-    const regiondata = await regRes.json();
-    let aux = 0;
-    let somministrazioni = 0;
-    for (let index = 0; index < data.data.length; index++) {
-      aux += (data.data[index].seconda_dose);
-      somministrazioni += (data.data[index].totale);
-    }
-    let time = data.data[0].ultimo_aggiornamento;
-    this.setState({time : time.substr(8,2) + "-" + time.substr(5,2) + "-" + time.substr(0,4), vaccinati: aux, 
-                        isLoaded: true, somministrazioni : somministrazioni, data: data.data,rawTime : time, bigdata: bigdata.data});
   }
 
   render() 
   {
-    const { navigation } = this.props;
-    if(!this.state.isLoaded)
-      return(
-        <View style={{alignItems: 'center', justifyContent: 'center', backgroundColor: '#171f24', height: Dimensions.get("window").height}}>
-          <StatusBar backgroundColor="#1a2a34" style='light'/>
-          <Text style={styles.title}>Report Vaccini</Text>
-          <ActivityIndicator style={{marginTop: 20}} size="large" color="#ffffff" />
-          <Image source={require('./images/syringe.png')} style={{position: "absolute", bottom: 50, width: 50, height: 50}} resizeMode="contain"/>
-        </View>
-    )
+    const { navigation, route } = this.props;
+    const {
+      somministrazioni,
+      vaccinati,
+      time,
+      rawTime,
+      female,
+      male,
+      mean,
+      second,
+      dataAge,
+      dataBezier,
+      dataPie,
+    } = this.props.route.params;
     return (
-      <View style={styles.container} >
+    <View style={styles.container} >
       <ScrollView  contentContainerStyle={{alignItems: 'center'}}>
           <StatusBar backgroundColor="#1a2a34" style='light'/>
         <View style={styles.titleView}>
@@ -72,28 +49,36 @@ class Home extends Component {
           </TouchableOpacity>
         </View>
         <View style={styles.box}>
-          <Text style={{fontWeight:"200", color: 'white', fontSize: 23}}>
+          <Text style={{fontWeight:"200", color: 'white', fontSize: 21}}>
             vaccinati in italia
           </Text>
           <View style={{margin: 0, padding: 0}}>
-            <NumberFormat thousandSeparator={true} displayType={'text'} value={this.state.vaccinati} renderText={formattedValue => <Text numberOfLines={1} style={{fontWeight:"200", color: 'white', fontSize: 50, margin: 0}}>{formattedValue}</Text>}/>
+            <NumberFormat thousandSeparator={true} displayType={'text'} value={vaccinati} renderText={formattedValue => <Text numberOfLines={1} style={{fontWeight:"200", color: 'white', fontSize: 40, margin: 0}}>{formattedValue}</Text>}/>
           </View>
           <Text style={{ fontWeight:"100", color: 'white', fontSize: 13, alignSelf: "flex-end"}}>
-            ultimo aggiornamento: {this.state.time}
+            ultimo aggiornamento: {time}
           </Text>
         </View>
         <View style={{...styles.box,...{backgroundColor: "#C14953"}}}>
-          <Text style={{fontWeight:"200", color: 'white', fontSize: 23}}>
+          <Text style={{fontWeight:"200", color: 'white', fontSize: 21}}>
             totale somministrazioni
           </Text>
           <View style={{margin: 0, padding: 0}}>
-            <NumberFormat thousandSeparator={true} displayType={'text'} value={this.state.somministrazioni} renderText={formattedValue => <Text numberOfLines={1} style={{fontWeight:"200", color: 'white', fontSize: 50, margin: 0}}>{formattedValue}</Text>}/>
+            <NumberFormat thousandSeparator={true} displayType={'text'} value={somministrazioni} renderText={formattedValue => <Text numberOfLines={1} style={{fontWeight:"200", color: 'white', fontSize: 40, margin: 0}}>{formattedValue}</Text>}/>
           </View>
         </View>
-        <Pie data = {this.state.data} totale={this.state.somministrazioni} />
-        <Bar data = {this.state.data} />
-        <Gender data={this.state.data} />
-        <Bezier data={this.state.bigdata} time={this.state.rawTime} />
+        <View style={{...styles.box,...{backgroundColor: "#fff59d"}}}>
+          <Text style={{fontWeight:"200", color: '#171f24', fontSize: 21}}>
+            solo prima dose
+          </Text>
+          <View style={{margin: 0, padding: 0}}>
+            <NumberFormat thousandSeparator={true} displayType={'text'} value={somministrazioni - vaccinati} renderText={formattedValue => <Text numberOfLines={1} style={{fontWeight:"200", color: '#171f24', fontSize: 40, margin: 0}}>{formattedValue}</Text>}/>
+          </View>
+        </View>
+        <Pie data={dataPie} totale={somministrazioni} />
+        <Bar data = {dataAge} />
+        <Gender male={male} female={female} />
+        <Bezier data={dataBezier} mean={mean} second={second} time={rawTime} />
       </ScrollView>
     </View>
     );
@@ -102,8 +87,8 @@ class Home extends Component {
 
 export default function(props) {
     const navigation = useNavigation();
-
-    return <Home {...props} navigation={navigation} />;
+    const route = useRoute();
+    return <Home {...props} navigation={navigation} route={route}/>;
 }
 
 const styles = StyleSheet.create({
